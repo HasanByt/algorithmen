@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Container, Typography, TextField, Button, MenuItem, Box, Paper } from '@mui/material';
 
 const App = () => {
   const [algorithms, setAlgorithms] = useState([]);
@@ -7,72 +8,112 @@ const App = () => {
   const [description, setDescription] = useState('');
   const [inputNumbers, setInputNumbers] = useState('');
   const [sortedNumbers, setSortedNumbers] = useState([]);
+  const [sortDuration, setSortDuration] = useState(null);
 
-  // Algorithmen aus der Datenbank laden
   useEffect(() => {
     axios.get('http://localhost:8080/algorithms')
       .then(res => setAlgorithms(res.data))
       .catch(err => console.error('Fehler beim Laden der Algorithmen:', err));
   }, []);
 
-  // Algorithmus-Auswahl aktualisieren
   const handleAlgorithmChange = (e) => {
     const algo = algorithms.find(a => a.id === parseInt(e.target.value));
     setSelectedAlgo(algo);
     setDescription(algo?.description || '');
   };
 
-  // Sortierfunktion (POST an ShakerSort-Endpunkt)
-  const handleSort = () => {
+  const handleSort = async () => {
     const numberArray = inputNumbers
       .split(',')
       .map(n => parseInt(n.trim()))
       .filter(n => !isNaN(n));
 
-    axios.post('http://localhost:8080/sort/shaker', numberArray)
-      .then(res => setSortedNumbers(res.data))
-      .catch(err => console.error('Fehler beim Sortieren:', err));
+    if (!selectedAlgo) {
+      alert('Bitte wähle einen Algorithmus aus.');
+      return;
+    }
+
+    const start = performance.now();
+
+    try {
+      const res = await axios.post(`http://localhost:8080/sort/${selectedAlgo.name.toLowerCase()}`, numberArray);
+      const end = performance.now();
+      setSortedNumbers(res.data);
+      setSortDuration((end - start).toFixed(2));
+    } catch (err) {
+      console.error('Fehler beim Sortieren:', err);
+    }
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>🔢 Sortier-Algorithmen</h1>
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 4 }}>
+        <Typography variant="h4" gutterBottom align="center">
+          Sortier-Algorithmen
+        </Typography>
 
-      <div style={{ margin: '1rem 0' }}>
-        <label htmlFor="algo-select">Algorithmus auswählen:</label><br/>
-        <select id="algo-select" onChange={handleAlgorithmChange}>
-          <option value="">-- bitte wählen --</option>
-          {algorithms.map(algo => (
-            <option key={algo.id} value={algo.id}>{algo.name}</option>
-          ))}
-        </select>
-      </div>
+        <Box sx={{ mt: 2 }}>
+          <TextField
+            select
+            fullWidth
+            label="Algorithmus auswählen"
+            onChange={handleAlgorithmChange}
+            value={selectedAlgo?.id || ''}
+          >
+            {algorithms.map(algo => (
+              <MenuItem key={algo.id} value={algo.id}>{algo.name}</MenuItem>
+            ))}
+          </TextField>
+        </Box>
 
-      {description && (
-        <div style={{ margin: '1rem 0', background: '#f0f0f0', padding: '1rem' }}>
-          <strong>Beschreibung:</strong>
-          <p>{description}</p>
-        </div>
-      )}
+        {description && (
+          <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">Beschreibung:</Typography>
+            <Typography variant="body2">{description}</Typography>
+          </Box>
+        )}
 
-      <div style={{ margin: '1rem 0' }}>
-        <label>Zahlen eingeben (z.B. 5, 3, 9):</label><br/>
-        <input
-          type="text"
-          value={inputNumbers}
-          onChange={(e) => setInputNumbers(e.target.value)}
-          style={{ width: '100%' }}
-        />
-      </div>
+        {selectedAlgo && (
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <img
+              src={`/gifs/${selectedAlgo.name.toLowerCase()}.gif`}
+              alt={`${selectedAlgo.name} GIF`}
+              style={{ maxWidth: '100%', borderRadius: '8px' }}
+            />
+          </Box>
+        )}
 
-      <button onClick={handleSort}>Sortieren</button>
+        <Box sx={{ mt: 3 }}>
+          <TextField
+            fullWidth
+            label="Zahlen eingeben (z.B. 5, 3, 9)"
+            value={inputNumbers}
+            onChange={(e) => setInputNumbers(e.target.value)}
+          />
+        </Box>
 
-      {sortedNumbers.length > 0 && (
-        <div style={{ marginTop: '1rem' }}>
-          <strong>Sortiertes Ergebnis:</strong> {sortedNumbers.join(', ')}
-        </div>
-      )}
-    </div>
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3 }}
+          onClick={handleSort}
+        >
+          Sortieren
+        </Button>
+
+        {sortedNumbers.length > 0 && (
+          <Box sx={{ mt: 3, p: 2, bgcolor: '#e8f5e9', borderRadius: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">Sortiertes Ergebnis:</Typography>
+            <Typography variant="body1">{sortedNumbers.join(', ')}</Typography>
+            {sortDuration && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                Sortierdauer: {sortDuration} ms
+              </Typography>
+            )}
+          </Box>
+        )}
+      </Paper>
+    </Container>
   );
 };
 
