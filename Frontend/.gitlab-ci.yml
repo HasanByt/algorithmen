@@ -30,4 +30,4 @@ dockerize:
 deploy:
   stage: deploy
   script:
-    - echo "Hier kannst du später ein Deployment auf z.B. AWS, Render oder VPS hinzufügen"
+    - echo "Hier kannst du später ein Deployment auf z.B. AWS, Render oder VPS hinzufügen "
