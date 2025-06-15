@@ -5,7 +5,7 @@ import { Container, Typography, TextField, Button, MenuItem, Box, Paper } from '
 const backendUrl =
   window.location.hostname === "localhost"
     ? "http://localhost:8080"
-    : "https://algorithmen-backend.up.railway.app";
+    : "https://authentic-stillness-production.up.railway.app";
 
 const App = () => {
   const [algorithms, setAlgorithms] = useState([]);
