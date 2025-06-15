@@ -1,13 +1,38 @@
-image: node:18
-
 stages:
+  - build
+  - docker
   - deploy
 
-deploy_to_railway:
-  stage: deploy
+variables:
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
+  DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH:latest
+
+build-backend:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-21
   script:
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+
+dockerize:
+  stage: docker
+  image: docker:24.0.6
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_IMAGE .
+    - docker push $DOCKER_IMAGE
+
+deploy:
+  stage: deploy
+  image: node:18
+  before_script:
     - npm install -g @railway/cli
-    - railway login --token $RAILWAY_TOKEN
-    - railway up --yes
+  script:
+    - railway up --service backend --detach
   only:
     - master
