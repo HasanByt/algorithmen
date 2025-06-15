@@ -11,7 +11,7 @@ const App = () => {
   const [sortDuration, setSortDuration] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/algorithms')
+    axios.get('https://algorithmen-backend.up.railway.app/algorithms')
       .then(res => setAlgorithms(res.data))
       .catch(err => console.error('Fehler beim Laden der Algorithmen:', err));
   }, []);
@@ -36,7 +36,7 @@ const App = () => {
     const start = performance.now();
 
     try {
-      const res = await axios.post(`http://localhost:8080/sort/${selectedAlgo.name.toLowerCase()}`, numberArray);
+      const res = await axios.post(`https://algorithmen-backend.up.railway.app/sort/${selectedAlgo.name.toLowerCase()}`, numberArray);
       const end = performance.now();
       setSortedNumbers(res.data);
       setSortDuration((end - start).toFixed(2));
