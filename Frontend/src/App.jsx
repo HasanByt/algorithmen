@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Typography, TextField, Button, MenuItem, Box, Paper } from '@mui/material';
 
+const backendUrl =
+  window.location.hostname === "localhost"
+    ? "http://localhost:8080"
+    : "https://algorithmen-backend.up.railway.app";
+
 const App = () => {
   const [algorithms, setAlgorithms] = useState([]);
   const [selectedAlgo, setSelectedAlgo] = useState(null);
@@ -11,7 +16,7 @@ const App = () => {
   const [sortDuration, setSortDuration] = useState(null);
 
   useEffect(() => {
-    axios.get('https://algorithmen-backend.up.railway.app/algorithms')
+    axios.get(`${backendUrl}/algorithms`)
       .then(res => setAlgorithms(res.data))
       .catch(err => console.error('Fehler beim Laden der Algorithmen:', err));
   }, []);
@@ -36,7 +41,7 @@ const App = () => {
     const start = performance.now();
 
     try {
-      const res = await axios.post(`https://algorithmen-backend.up.railway.app/sort/${selectedAlgo.name.toLowerCase()}`, numberArray);
+      const res = await axios.post(`${backendUrl}/sort/${selectedAlgo.name.toLowerCase()}`, numberArray);
       const end = performance.now();
       setSortedNumbers(res.data);
       setSortDuration((end - start).toFixed(2));
