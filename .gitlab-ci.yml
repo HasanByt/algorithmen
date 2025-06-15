@@ -33,6 +33,7 @@ deploy:
   before_script:
     - npm install -g @railway/cli
   script:
-    - railway up --service backend --detach
+  - railway up --service authentic-stillness --detach
+
   only:
     - master
