@@ -3,11 +3,11 @@ image: node:18
 stages:
   - deploy
 
-before_script:
-  - npm install -g railway
-  - echo $RAILWAY_TOKEN | railway login --ci
-
-deploy-backend:
+deploy_to_railway:
   stage: deploy
   script:
-    - railway up
+    - npm install -g @railway/cli
+    - railway login --token $RAILWAY_TOKEN
+    - railway up --yes
+  only:
+    - master
