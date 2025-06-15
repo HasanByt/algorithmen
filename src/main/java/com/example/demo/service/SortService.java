@@ -12,11 +12,13 @@ public class SortService {
     public List<Integer> sortByAlgorithm(String algorithmName, List<Integer> numbers) {
         return switch (algorithmName.toLowerCase()) {
             case "shakersort", "shaker" ->
-                shakerSort(numbers);
+                shakerSort(new ArrayList<>(numbers));
             case "bubblesort", "bubble" ->
-                bubbleSort(numbers);
+                bubbleSort(new ArrayList<>(numbers));
             case "mergesort", "merge" ->
-                mergeSort(numbers);
+                mergeSort(new ArrayList<>(numbers));
+            case "timsort", "tim" ->
+                timSort(new ArrayList<>(numbers));
             default ->
                 throw new IllegalArgumentException("Unbekannter Algorithmus: " + algorithmName);
         };
@@ -38,8 +40,10 @@ public class SortService {
             if (!swapped) {
                 break;
             }
+
             swapped = false;
             end--;
+
             for (int i = end - 1; i >= start; i--) {
                 if (list.get(i) > list.get(i + 1)) {
                     Collections.swap(list, i, i + 1);
@@ -101,5 +105,11 @@ public class SortService {
         }
 
         return result;
+    }
+
+    // Timsort (vereinfacht: nutzt Java-eigenes Sortierverfahren)
+    private List<Integer> timSort(List<Integer> list) {
+        list.sort(Integer::compareTo); // Java verwendet intern Timsort
+        return list;
     }
 }
