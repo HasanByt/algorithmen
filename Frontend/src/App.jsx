@@ -136,10 +136,11 @@ const App = () => {
               <img
                 src={`/gifs/${selectedAlgo.name.toLowerCase()}.gif`}
                 alt={`${selectedAlgo.name} GIF`}
-                style={{ maxWidth: '100%', borderRadius: '8px' }}
+                className="algorithm-gif"
               />
             </Box>
           )}
+
 
           <Box sx={{ mt: 3 }}>
             <TextField
