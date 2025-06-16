@@ -1,13 +1,10 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.service.SortService;
 
@@ -19,7 +16,7 @@ public class SortController {
     private SortService sortService;
 
     @PostMapping("/{algorithmName}")
-    public List<Integer> sort(@PathVariable String algorithmName, @RequestBody List<Integer> numbers) {
-        return sortService.sortByAlgorithm(algorithmName, numbers);
+    public Map<String, Object> sort(@PathVariable String algorithmName, @RequestBody List<Integer> numbers) {
+        return sortService.sortByAlgorithmWithTime(algorithmName, numbers);
     }
 }

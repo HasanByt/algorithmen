@@ -55,16 +55,14 @@ const App = () => {
     }
 
     setLoading(true);
-    const start = performance.now();
 
     try {
       const res = await axios.post(
         `${backendUrl}/sort/${selectedAlgo.name.toLowerCase()}`,
         numberArray
       );
-      const end = performance.now();
-      setSortedNumbers(res.data);
-      setSortDuration((end - start).toFixed(2));
+      setSortedNumbers(res.data.sorted);
+      setSortDuration(res.data.durationMs.toFixed(2));
     } catch (err) {
       console.error('Fehler beim Sortieren:', err);
     } finally {
@@ -72,118 +70,137 @@ const App = () => {
     }
   };
 
-  return (
-    <>
+
+  setLoading(true);
+  const start = performance.now();
+
+  try {
+    const res = await axios.post(
+      `${backendUrl}/sort/${selectedAlgo.name.toLowerCase()}`,
+      numberArray
+    );
+    const end = performance.now();
+    setSortedNumbers(res.data);
+    setSortDuration((end - start).toFixed(2));
+  } catch (err) {
+    console.error('Fehler beim Sortieren:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+return (
+  <>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        mt: 4,
+        mb: 2
+      }}
+    >
       <Box
+        component="img"
+        src={logo}
+        alt="algooo Logo"
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          mt: 4,
-          mb: 2
+          height: { xs: 120, sm: 160, md: 180 },
+          maxWidth: { xs: 300, sm: 400, md: 500 },
+          objectFit: 'contain'
         }}
-      >
-        <Box
-          component="img"
-          src={logo}
-          alt="algooo Logo"
-          sx={{
-            height: { xs: 120, sm: 160, md: 180 },
-            maxWidth: { xs: 300, sm: 400, md: 500 },
-            objectFit: 'contain'
-          }}
-        />
-      </Box>
+      />
+    </Box>
 
-      <Container maxWidth="sm">
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 4 }}>
-          <Typography variant="h4" gutterBottom align="center">
-            Sortier-Algorithmen
-          </Typography>
+    <Container maxWidth="sm">
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 4 }}>
+        <Typography variant="h4" gutterBottom align="center">
+          Sortier-Algorithmen
+        </Typography>
 
-          <Box sx={{ mt: 2 }}>
-            <TextField
-              select
-              fullWidth
-              label="Algorithmus auswählen"
-              onChange={handleAlgorithmChange}
-              value={selectedAlgo?.id || ''}
-            >
-              <MenuItem value="" disabled>
-                -- bitte auswählen --
+        <Box sx={{ mt: 2 }}>
+          <TextField
+            select
+            fullWidth
+            label="Algorithmus auswählen"
+            onChange={handleAlgorithmChange}
+            value={selectedAlgo?.id || ''}
+          >
+            <MenuItem value="" disabled>
+              -- bitte auswählen --
+            </MenuItem>
+            {algorithms.map((algo) => (
+              <MenuItem key={algo.id} value={algo.id}>
+                {algo.name}
               </MenuItem>
-              {algorithms.map((algo) => (
-                <MenuItem key={algo.id} value={algo.id}>
-                  {algo.name}
-                </MenuItem>
-              ))}
-            </TextField>
+            ))}
+          </TextField>
+        </Box>
+
+        {description && (
+          <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="bold">Beschreibung:</Typography>
+            <Typography variant="h6">{description}</Typography>
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Komplexität: {selectedAlgo?.complexity || 'Nicht verfügbar'}
+            </Typography>
           </Box>
-
-          {description && (
-            <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
-              <Typography variant="h6" fontWeight="bold">Beschreibung:</Typography>
-              <Typography variant="h6">{description}</Typography>
-              <Typography variant="h6" sx={{ mt: 2 }}>
-                Komplexität: {selectedAlgo?.complexity || 'Nicht verfügbar'}
-              </Typography>
-            </Box>
-          )}
+        )}
 
 
 
-          {selectedAlgo && (
-            <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <img
-                src={`/gifs/${selectedAlgo.name.toLowerCase()}.gif`}
-                alt={`${selectedAlgo.name} GIF`}
-                className="algorithm-gif"
-              />
-            </Box>
-          )}
-
-
-          <Box sx={{ mt: 3 }}>
-            <TextField
-              fullWidth
-              label="Zahlen eingeben (z. B. 5, 3, 9)"
-              value={inputNumbers}
-              onChange={(e) => setInputNumbers(e.target.value)}
+        {selectedAlgo && (
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <img
+              src={`/gifs/${selectedAlgo.name.toLowerCase()}.gif`}
+              alt={`${selectedAlgo.name} GIF`}
+              className="algorithm-gif"
             />
           </Box>
+        )}
 
-          <Button
+
+        <Box sx={{ mt: 3 }}>
+          <TextField
             fullWidth
-            variant="contained"
-            sx={{ mt: 3 }}
-            onClick={handleSort}
-            disabled={loading}
-          >
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Sortieren'}
-          </Button>
+            label="Zahlen eingeben (z. B. 5, 3, 9)"
+            value={inputNumbers}
+            onChange={(e) => setInputNumbers(e.target.value)}
+          />
+        </Box>
 
-          {sortedNumbers.length > 0 && (
-            <Box sx={{ mt: 3, p: 2, bgcolor: '#e8f5e9', borderRadius: 2 }}>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Sortiertes Ergebnis:
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3 }}
+          onClick={handleSort}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Sortieren'}
+        </Button>
+
+        {sortedNumbers.length > 0 && (
+          <Box sx={{ mt: 3, p: 2, bgcolor: '#e8f5e9', borderRadius: 2 }}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Sortiertes Ergebnis:
+            </Typography>
+            <Typography variant="body1">
+              {sortedNumbers.join(', ')}
+            </Typography>
+            {sortDuration && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 1 }}
+              >
+                Sortierdauer: {sortDuration} ms
               </Typography>
-              <Typography variant="body1">
-                {sortedNumbers.join(', ')}
-              </Typography>
-              {sortDuration && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  Sortierdauer: {sortDuration} ms
-                </Typography>
-              )}
-            </Box>
-          )}
-        </Paper>
-      </Container>
-    </>
-  );
+            )}
+          </Box>
+        )}
+      </Paper>
+    </Container>
+  </>
+);
 };
 
 export default App;

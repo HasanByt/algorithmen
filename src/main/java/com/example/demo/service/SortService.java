@@ -1,8 +1,6 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.stereotype.Service;
 
@@ -24,6 +22,18 @@ public class SortService {
         };
     }
 
+    public Map<String, Object> sortByAlgorithmWithTime(String algorithmName, List<Integer> numbers) {
+        long start = System.nanoTime();
+        List<Integer> sorted = sortByAlgorithm(algorithmName, numbers);
+        long end = System.nanoTime();
+        double durationMs = (end - start) / 1_000_000.0;
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("sorted", sorted);
+        result.put("durationMs", durationMs);
+        return result;
+    }
+
     private List<Integer> shakerSort(List<Integer> list) {
         boolean swapped = true;
         int start = 0;
@@ -37,9 +47,7 @@ public class SortService {
                     swapped = true;
                 }
             }
-            if (!swapped) {
-                break;
-            }
+            if (!swapped) break;
 
             swapped = false;
             end--;
@@ -66,17 +74,13 @@ public class SortService {
                     swapped = true;
                 }
             }
-            if (!swapped) {
-                break;
-            }
+            if (!swapped) break;
         }
         return list;
     }
 
     private List<Integer> mergeSort(List<Integer> list) {
-        if (list.size() <= 1) {
-            return list;
-        }
+        if (list.size() <= 1) return list;
 
         int mid = list.size() / 2;
         List<Integer> left = mergeSort(new ArrayList<>(list.subList(0, mid)));
@@ -97,19 +101,14 @@ public class SortService {
             }
         }
 
-        while (i < left.size()) {
-            result.add(left.get(i++));
-        }
-        while (j < right.size()) {
-            result.add(right.get(j++));
-        }
+        while (i < left.size()) result.add(left.get(i++));
+        while (j < right.size()) result.add(right.get(j++));
 
         return result;
     }
 
-    // Timsort (vereinfacht: nutzt Java-eigenes Sortierverfahren)
     private List<Integer> timSort(List<Integer> list) {
-        list.sort(Integer::compareTo); // Java verwendet intern Timsort
+        list.sort(Integer::compareTo); // Intern Timsort in Java
         return list;
     }
 }
