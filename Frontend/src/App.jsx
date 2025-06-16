@@ -129,6 +129,8 @@ const App = () => {
             </Box>
           )}
 
+
+
           {selectedAlgo && (
             <Box sx={{ mt: 2, textAlign: 'center' }}>
               <img
