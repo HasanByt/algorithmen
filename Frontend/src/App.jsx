@@ -55,22 +55,21 @@ const App = () => {
     }
 
     setLoading(true);
-    const start = performance.now();
 
     try {
       const res = await axios.post(
         `${backendUrl}/sort/${selectedAlgo.name.toLowerCase()}`,
         numberArray
       );
-      const end = performance.now();
-      setSortedNumbers(res.data);
-      setSortDuration((end - start).toFixed(2));
+      setSortedNumbers(res.data.sorted);
+      setSortDuration(res.data.durationMs.toFixed(2));
     } catch (err) {
       console.error('Fehler beim Sortieren:', err);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <>
