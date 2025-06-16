@@ -116,9 +116,15 @@ const App = () => {
               <Typography variant="h6" fontWeight="bold">
                 Beschreibung:
               </Typography>
-              <Typography variant="h6">{description}</Typography>
-              <Typography variant="h6" sx={{ mt: 2 }}>
-                Komplexität: {selectedAlgo?.complexity || 'Nicht verfügbar'}
+              <Typography variant="body1">
+                {description}
+              </Typography>
+
+              <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>
+                Komplexität:
+              </Typography>
+              <Typography variant="body1">
+                {selectedAlgo?.complexity || 'Nicht verfügbar'}
               </Typography>
             </Box>
           )}
