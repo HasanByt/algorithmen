@@ -24,6 +24,9 @@ public class Algorithm {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(length = 100)
+    private String complexity; // Komplexität als neues Feld
+
     // Getter & Setter
 
     public Long getId() {
@@ -48,5 +51,13 @@ public class Algorithm {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getComplexity() {
+        return complexity;
+    }
+
+    public void setComplexity(String complexity) {
+        this.complexity = complexity;
     }
 }
