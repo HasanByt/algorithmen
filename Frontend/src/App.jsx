@@ -121,10 +121,11 @@ const App = () => {
 
           {description && (
             <Box sx={{ mt: 2, p: 2, bgcolor: '#e3f2fd', borderRadius: 2 }}>
-              <Typography variant="subtitle1" fontWeight="bold">
-                Beschreibung:
+              <Typography variant="h6" fontWeight="bold">Beschreibung:</Typography>
+              <Typography variant="h6">{description}</Typography>
+              <Typography variant="h6" sx={{ mt: 2 }}>
+                Komplexität: {selectedAlgo?.complexity || 'Nicht verfügbar'}
               </Typography>
-              <Typography variant="body2">{description}</Typography>
             </Box>
           )}
 
