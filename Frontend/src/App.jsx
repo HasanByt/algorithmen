@@ -130,13 +130,11 @@ const App = () => {
           )}
 
           {selectedAlgo && (
-            <Box sx={{ mt: 2, textAlign: 'center' }}>
               <img
                 src={`/gifs/${selectedAlgo.name.toLowerCase()}.gif`}
                 alt={`${selectedAlgo.name} GIF`}
                 className="algorithm-gif"
               />
-            </Box>
           )}
 
           <Box sx={{ mt: 3 }}>
