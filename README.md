@@ -21,6 +21,9 @@ Algooo ist eine Fullstack-Webanwendung, mit der verschiedene Sortieralgorithmen 
   - [Algorithmen in SortService](#algorithmen-in-sortservice)
     - [• BubbleSort](#-bubblesort)
     - [• ShakerSort](#-shakersort)
+      - [Implementierung im Projekt:](#implementierung-im-projekt)
+      - [Erklärung:](#erklärung)
+      - [Vorteil:](#vorteil)
     - [• MergeSort](#-mergesort)
     - [• TimSort](#-timsort)
   - [Frontend-Anbindung](#frontend-anbindung)
@@ -190,7 +193,71 @@ POST    /sort/{algorithm}
 
 ### • ShakerSort
 
-* Bewegt sich vorwärts und rückwärts durch das Array.
+Der ShakerSort (auch CocktailSort genannt) ist eine verbesserte Variante des BubbleSort-Algorithmus. Im Gegensatz zum einfachen BubbleSort, der sich nur in eine Richtung durch die Liste bewegt, durchläuft der ShakerSort die Liste bidirektional: zuerst vorwärts, dann rückwärts.
+
+#### Implementierung im Projekt:
+
+Die Methode befindet sich in `SortService.java`:
+
+```java
+private List<Integer> shakerSort(List<Integer> list) {
+    // Wird verwendet, um festzustellen, ob während eines Durchgangs ein Tausch stattgefunden hat
+    boolean swapped = true;
+
+    // Start- und Endgrenzen für den Bereich, der durchlaufen wird
+    int start = 0;
+    int end = list.size() - 1;
+
+    // Solange ein Tausch stattfindet, soll weiter sortiert werden
+    while (swapped) {
+        swapped = false;
+
+        // Vorwärtsdurchlauf: von links nach rechts
+        for (int i = start; i < end; i++) {
+            if (list.get(i) > list.get(i + 1)) {
+                // Wenn das aktuelle Element grösser als das nächste ist, tauschen
+                Collections.swap(list, i, i + 1);
+                swapped = true; // Es wurde ein Tausch durchgeführt
+            }
+        }
+
+        // Wenn kein Tausch stattfand, ist das Array bereits sortiert
+        if (!swapped) break;
+
+        // Da das grösste Element jetzt rechts steht, kann das Ende reduziert werden
+        swapped = false;
+        end--;
+
+        // Rückwärtsdurchlauf: von rechts nach links
+        for (int i = end - 1; i >= start; i--) {
+            if (list.get(i) > list.get(i + 1)) {
+                // Tausch wie im Vorwärtsdurchlauf
+                Collections.swap(list, i, i + 1);
+                swapped = true;
+            }
+        }
+
+        // Da das kleinste Element jetzt links steht, kann der Start erhöht werden
+        start++;
+    }
+
+    // Gibt die sortierte Liste zurück
+    return list;
+}
+
+```
+
+#### Erklärung:
+
+* **Start-/Endgrenzen** (`start`, `end`) definieren den Bereich, in dem Elemente noch getauscht werden können.
+* **Vorwärtsdurchlauf**: Grössere Werte „wandern“ nach rechts.
+* **Rückwärtsdurchlauf**: Kleinere Werte „wandern“ nach links.
+* Der Bereich verkleinert sich nach jedem Durchlauf.
+* `swapped` wird verwendet, um zu prüfen, ob noch Änderungen vorgenommen wurden – ist kein Tausch nötig, endet die Schleife.
+
+#### Vorteil:
+
+ShakerSort erkennt schneller, wenn das Array bereits (teilweise) sortiert ist, da in beiden Richtungen verglichen wird. Dadurch kann er bei bestimmten Datensätzen effizienter sein als BubbleSort.
 
 ### • MergeSort
 
