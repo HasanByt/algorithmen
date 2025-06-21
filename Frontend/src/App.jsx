@@ -25,6 +25,7 @@ const App = () => {
   const [sortedNumbers, setSortedNumbers] = useState([]);
   const [sortDuration, setSortDuration] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [comparisons, setComparisons] = useState(null);
 
   useEffect(() => {
     axios
@@ -41,6 +42,7 @@ const App = () => {
     setDescription(algo?.description || '');
     setSortedNumbers([]);
     setSortDuration(null);
+    setComparisons(null);
   };
 
   const handleSort = async () => {
@@ -63,13 +65,13 @@ const App = () => {
       );
       setSortedNumbers(res.data.sorted);
       setSortDuration(res.data.durationMs.toFixed(2));
+      setComparisons(res.data.comparisons);
     } catch (err) {
       console.error('Fehler beim Sortieren:', err);
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <>
@@ -169,6 +171,11 @@ const App = () => {
               {sortDuration && (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                   Sortierdauer: {sortDuration} ms
+                </Typography>
+              )}
+              {comparisons !== null && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                  Vergleiche: {comparisons}
                 </Typography>
               )}
             </Box>
