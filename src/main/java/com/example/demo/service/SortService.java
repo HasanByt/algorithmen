@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SortService {
 
-public Map<String, Object> sortByAlgorithmWithTime(String algorithmName, List<Integer> numbers) {
+    public Map<String, Object> sortByAlgorithmWithTime(String algorithmName, List<Integer> numbers) {
         long start = System.nanoTime();
 
         Map<String, Object> result;
@@ -25,6 +25,8 @@ public Map<String, Object> sortByAlgorithmWithTime(String algorithmName, List<In
                 result = mergeSort(numbers);
             case "timsort", "tim" ->
                 result = timSort(numbers);
+            case "slowsort", "slow" ->
+                result = slowSort(numbers);
             default ->
                 throw new IllegalArgumentException("Unbekannter Algorithmus: " + algorithmName);
         }
@@ -158,6 +160,35 @@ public Map<String, Object> sortByAlgorithmWithTime(String algorithmName, List<In
         map.put("sorted", list);
         map.put("comparisons", comparisons);
         return map;
+    }
+
+    private Map<String, Object> slowSort(List<Integer> numbers) {
+        AtomicInteger comparisons = new AtomicInteger(0);
+        List<Integer> list = new ArrayList<>(numbers);
+        slowSort(list, 0, list.size() - 1, comparisons);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("sorted", list);
+        map.put("comparisons", comparisons.get());
+        return map;
+    }
+
+    private void slowSort(List<Integer> list, int i, int j, AtomicInteger comparisons) {
+        if (i >= j) {
+            return;
+        }
+
+        int m = (i + j) / 2;
+
+        slowSort(list, i, m, comparisons);
+        slowSort(list, m + 1, j, comparisons);
+
+        comparisons.incrementAndGet(); // Vergleich zählen
+        if (list.get(j) < list.get(m)) {
+            Collections.swap(list, j, m);
+        }
+
+        slowSort(list, i, j - 1, comparisons);
     }
 
     private static class ComparisonCounter {
