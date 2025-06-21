@@ -115,7 +115,4 @@ public class SortService {
         return list;
     }
 
-    private List<Integer> slow(List<Integer> list) {
-        return null;
-    }
 }
