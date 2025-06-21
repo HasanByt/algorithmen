@@ -17,8 +17,6 @@ public class SortService {
                 mergeSort(new ArrayList<>(numbers));
             case "timsort", "tim" ->
                 timSort(new ArrayList<>(numbers));
-            case "slowsort", "slow" ->
-                slowSort(new ArrayList<>(numbers));
 
             default ->
                 throw new IllegalArgumentException("Unbekannter Algorithmus: " + algorithmName);
