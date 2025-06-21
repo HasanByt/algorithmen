@@ -17,6 +17,9 @@ public class SortService {
                 mergeSort(new ArrayList<>(numbers));
             case "timsort", "tim" ->
                 timSort(new ArrayList<>(numbers));
+            case "slowsort", "slow" ->
+                slowSort(new ArrayList<>(numbers));
+
             default ->
                 throw new IllegalArgumentException("Unbekannter Algorithmus: " + algorithmName);
         };
@@ -110,5 +113,9 @@ public class SortService {
     private List<Integer> timSort(List<Integer> list) {
         list.sort(Integer::compareTo); // Intern Timsort in Java
         return list;
+    }
+
+    private List<Integer> slow(List<Integer> list) {
+        return null;
     }
 }
