@@ -1,28 +1,35 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
     image: mysql:8
     container_name: mysql
-    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    volumes:
-      - mysql_data:/var/lib/mysql
+      MYSQL_ROOT_PASSWORD: faWaHSUMTwvPwpxQCjemCvJVaymiBzEO
+      MYSQL_DATABASE: algooo
     ports:
       - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   springboot:
-    image: registry.gitlab.com/m3244263024/algorithmen:latest
+    build: .
     container_name: springboot
-    depends_on:
-      - mysql
-    environment:
-      SPRING_PROFILES_ACTIVE: default
     ports:
       - "8080:8080"
-    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/algooo
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: faWaHSUMTwvPwpxQCjemCvJVaymiBzEO
+    restart: on-failure
 
 volumes:
   mysql_data:
