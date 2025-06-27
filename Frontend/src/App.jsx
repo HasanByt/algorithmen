@@ -15,7 +15,8 @@ import logo from '/algooo.png';
 const backendUrl =
   window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
-    : 'https://authentic-stillness-production.up.railway.app';
+    : 'http://31.165.207.219:8080';
+
 
 const App = () => {
   const [algorithms, setAlgorithms] = useState([]);
