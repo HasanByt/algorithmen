@@ -15,10 +15,10 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins(
-                            "http://localhost:5173",
-                            "http://localhost:3000",
-                            "https://algooo.netlify.app"
-                        )
+                                "http://localhost:5173",
+                                "http://localhost:3000",
+                                "https://algooo.netlify.app",
+                                "https://blanket-inkjet-educated-instructor.trycloudflare.com")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
             }
