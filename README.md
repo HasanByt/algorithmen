@@ -347,3 +347,145 @@ deploy:
 Hasan Bytyqi <br/>
 Mazlum Raimi <br/>
 Kyriakos Amanatidis <br/>
+
+# 🧭 Anleitung: Projekt „Algooo“ lokal mit Ubuntu Server betreiben
+
+## 📦 Voraussetzungen
+
+- Ubuntu Server (z. B. auf Laptop oder VPS)
+- Docker & Docker Compose installiert
+- GitLab-Projekt vorhanden mit Backend
+- Frontend ist auf Netlify gehostet
+- [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/) installiert (optional für HTTPS ohne Domain)
+
+---
+
+## 📁 Projektstruktur
+
+- **Spring Boot Backend** (Java + Maven)
+- **MySQL** (als Docker-Container)
+- **Frontend**: React, wird auf Netlify gehostet
+
+---
+
+## 🛠️ Schritte zur lokalen Einrichtung auf Ubuntu
+
+### 1. GitLab-Repo clonen
+
+```bash
+git clone git@gitlab.com:USERNAME/REPO.git
+cd REPO
+```
+
+---
+
+### 2. Dockerfile prüfen (bereits vorhanden)
+
+```dockerfile
+# Build Stage
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
+# Runtime Stage
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
+
+---
+
+### 3. `docker-compose.yml` erstellen
+
+```yaml
+version: '3.8'
+services:
+  backend:
+    build: .
+    ports:
+      - '8080:8080'
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/algooo
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: DEIN_PASSWORT
+    networks:
+      - algo-net
+
+  mysql:
+    image: mysql:8
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: DEIN_PASSWORT
+      MYSQL_DATABASE: algooo
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - algo-net
+
+volumes:
+  mysql_data:
+
+networks:
+  algo-net:
+```
+
+---
+
+### 4. `application.properties` im Backend anpassen
+
+```properties
+spring.datasource.url=jdbc:mysql://mysql:3306/algooo
+spring.datasource.username=root
+spring.datasource.password=DEIN_PASSWORT
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+```
+
+---
+
+### 5. Projekt starten
+
+```bash
+docker compose up --build -d
+```
+
+---
+
+### 6. Cloudflare Tunnel (für öffentliches HTTPS)
+
+```bash
+cloudflared tunnel --url http://localhost:8080
+```
+
+📎 Die URL wird dann z. B. `https://tunnelname.trycloudflare.com` sein.
+
+---
+
+### 7. Frontend anpassen (`App.jsx`)
+
+```js
+const backendUrl =
+  window.location.hostname === 'localhost'
+    ? 'http://localhost:8080'
+    : 'https://DEIN-TUNNEL.trycloudflare.com';
+```
+
+Anschließend neu bauen und auf Netlify pushen.
+
+---
+
+## ✅ Fertig!
+
+- Das Backend läuft lokal auf deinem Server
+- Das Frontend holt die Daten per HTTPS vom Tunnel
+- Alles läuft DSGVO-konform und kostenlos auf deiner Infrastruktur
+
+---

@@ -29,11 +29,14 @@ dockerize:
 
 deploy:
   stage: deploy
-  image: node:18
+  image: alpine:latest
   before_script:
-    - npm install -g @railway/cli
+    - apk add --no-cache openssh
   script:
-  - railway up --service authentic-stillness --detach
-
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /home/hasan/Dokumente/Dev/M324/algorithmen && git pull && docker compose pull && docker compose up -d"
   only:
     - master
