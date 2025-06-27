@@ -18,7 +18,7 @@ public class CorsConfig {
                                 "http://localhost:5173",
                                 "http://localhost:3000",
                                 "https://algooo.netlify.app",
-                                "https://sv-scuba-blocking-listening.trycloudflare.com")
+                                "https://raise-operational-will-gentle.trycloudflare.com")
 
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
