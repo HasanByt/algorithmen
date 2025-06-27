@@ -15,7 +15,7 @@ import logo from '/algooo.png';
 const backendUrl =
   window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
-    : '"https://approximate-mambo-field-vista.trycloudflare.com"';
+    : 'https://sv-scuba-blocking-listening.trycloudflare.com';
 
 
 const App = () => {
