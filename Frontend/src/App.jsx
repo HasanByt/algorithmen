@@ -15,7 +15,7 @@ import logo from '/algooo.png';
 const backendUrl =
   window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
-    : 'http://31.165.207.219:8080';
+    : 'https://blanket-inkjet-educated-instructor.trycloudflare.com';
 
 
 const App = () => {
