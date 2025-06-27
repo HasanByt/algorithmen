@@ -32,11 +32,11 @@ deploy:
   image: alpine:latest
   before_script:
     - apk add --no-cache openssh
-  script:
+    - mkdir -p ~/.ssh                       # Verzeichnis zuerst erstellen!
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - mkdir -p ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  script:
     - ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /home/hasan/Dokumente/Dev/M324/algorithmen && git pull && docker compose pull && docker compose up -d"
   only:
     - master
