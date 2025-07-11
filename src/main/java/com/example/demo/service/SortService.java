@@ -1,199 +1,34 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import ch.wiss.magicsort.ISort;
+import ch.wiss.magicsort.SortAlgorithm;
+import ch.wiss.magicsort.SortFactory;
+import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class SortService {
 
     public Map<String, Object> sortByAlgorithmWithTime(String algorithmName, List<Integer> numbers) {
+        SortAlgorithm algorithm = SortAlgorithm.fromDbName(algorithmName);
+        ISort sorter = SortFactory.getSorter(algorithm);
+
         long start = System.nanoTime();
-
-        Map<String, Object> result;
-        switch (algorithmName.toLowerCase()) {
-            case "shakersort", "shaker" ->
-                result = shakerSort(numbers);
-            case "bubblesort", "bubble" ->
-                result = bubbleSort(numbers);
-            case "mergesort", "merge" ->
-                result = mergeSort(numbers);
-            case "timsort", "tim" ->
-                result = timSort(numbers);
-            case "slowsort", "slow" ->
-                result = slowSort(numbers);
-            default ->
-                throw new IllegalArgumentException("Unbekannter Algorithmus: " + algorithmName);
-        }
-
+        List<Integer> sorted = sorter.sort(numbers);
         long end = System.nanoTime();
-        double durationMs = (end - start) / 1_000_000.0;
 
-        result.put("durationMs", durationMs);
-        return result;
-    }
+        Map<String, Object> result = new HashMap<>();
+        result.put("algorithm", algorithm.getDbName());
+        result.put("input", numbers);
+        result.put("sorted", sorted);
+        result.put("durationMs", (end - start) / 1_000_000.0);
 
-    private Map<String, Object> shakerSort(List<Integer> numbers) {
-        int comparisons = 0;
-        List<Integer> list = new ArrayList<>(numbers);
-        boolean swapped = true;
-        int start = 0;
-        int end = list.size() - 1;
-
-        while (swapped) {
-            swapped = false;
-            for (int i = start; i < end; i++) {
-                comparisons++;
-                if (list.get(i) > list.get(i + 1)) {
-                    Collections.swap(list, i, i + 1);
-                    swapped = true;
-                }
-            }
-            if (!swapped) {
-                break;
-            }
-
-            swapped = false;
-            end--;
-
-            for (int i = end - 1; i >= start; i--) {
-                comparisons++;
-                if (list.get(i) > list.get(i + 1)) {
-                    Collections.swap(list, i, i + 1);
-                    swapped = true;
-                }
-            }
-            start++;
-        }
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("sorted", list);
-        map.put("comparisons", comparisons);
-        return map;
-    }
-
-    private Map<String, Object> bubbleSort(List<Integer> numbers) {
-        int comparisons = 0;
-        List<Integer> list = new ArrayList<>(numbers);
-        int n = list.size();
-        boolean swapped;
-        for (int i = 0; i < n - 1; i++) {
-            swapped = false;
-            for (int j = 0; j < n - i - 1; j++) {
-                comparisons++;
-                if (list.get(j) > list.get(j + 1)) {
-                    Collections.swap(list, j, j + 1);
-                    swapped = true;
-                }
-            }
-            if (!swapped) {
-                break;
-            }
-        }
-        Map<String, Object> map = new HashMap<>();
-        map.put("sorted", list);
-        map.put("comparisons", comparisons);
-        return map;
-    }
-
-    private Map<String, Object> mergeSort(List<Integer> numbers) {
-        List<Integer> list = new ArrayList<>(numbers);
-        ComparisonCounter counter = new ComparisonCounter();
-        List<Integer> sorted = mergeSort(list, counter);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("sorted", sorted);
-        map.put("comparisons", counter.count);
-        return map;
-    }
-
-    private List<Integer> mergeSort(List<Integer> list, ComparisonCounter counter) {
-        if (list.size() <= 1) {
-            return list;
-        }
-
-        int mid = list.size() / 2;
-        List<Integer> left = mergeSort(new ArrayList<>(list.subList(0, mid)), counter);
-        List<Integer> right = mergeSort(new ArrayList<>(list.subList(mid, list.size())), counter);
-
-        return merge(left, right, counter);
-    }
-
-    private List<Integer> merge(List<Integer> left, List<Integer> right, ComparisonCounter counter) {
-        List<Integer> result = new ArrayList<>();
-        int i = 0, j = 0;
-
-        while (i < left.size() && j < right.size()) {
-            counter.count++;
-            if (left.get(i) <= right.get(j)) {
-                result.add(left.get(i++));
-            } else {
-                result.add(right.get(j++));
-            }
-        }
-
-        while (i < left.size()) {
-            result.add(left.get(i++));
-        }
-        while (j < right.size()) {
-            result.add(right.get(j++));
-        }
+        // Optional: Wenn du Vergleichszähler einbauen willst → später als Erweiterung
+        result.put("comparisons", null);
 
         return result;
     }
-
-    private Map<String, Object> timSort(List<Integer> numbers) {
-        AtomicInteger comparisons = new AtomicInteger(0);
-
-        List<Integer> list = new ArrayList<>(numbers);
-        list.sort((a, b) -> {
-            comparisons.incrementAndGet(); // Vergleich zählen
-            return Integer.compare(a, b);
-        });
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("sorted", list);
-        map.put("comparisons", comparisons);
-        return map;
-    }
-
-    private Map<String, Object> slowSort(List<Integer> numbers) {
-        AtomicInteger comparisons = new AtomicInteger(0);
-        List<Integer> list = new ArrayList<>(numbers);
-        slowSort(list, 0, list.size() - 1, comparisons);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("sorted", list);
-        map.put("comparisons", comparisons.get());
-        return map;
-    }
-
-    private void slowSort(List<Integer> list, int i, int j, AtomicInteger comparisons) {
-        if (i >= j) {
-            return;
-        }
-
-        int m = (i + j) / 2;
-
-        slowSort(list, i, m, comparisons);
-        slowSort(list, m + 1, j, comparisons);
-
-        comparisons.incrementAndGet(); // Vergleich zählen
-        if (list.get(j) < list.get(m)) {
-            Collections.swap(list, j, m);
-        }
-
-        slowSort(list, i, j - 1, comparisons);
-    }
-
-    private static class ComparisonCounter {
-
-        int count = 0;
-    }
-
 }
