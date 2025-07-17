@@ -61,7 +61,7 @@ const App = () => {
 
     try {
       const res = await axios.post(
-        `${backendUrl}/sort/${selectedAlgo.name}`,
+        `${backendUrl}/sort/${selectedAlgo.name.toLowerCase()}`,
         numberArray
       );
       setSortedNumbers(res.data.sorted);
