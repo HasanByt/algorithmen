@@ -1,16 +1,15 @@
-name: Build & Deploy Backend to Ubuntu Server
+name: Build & Deploy to Ubuntu Server
 
 on:
   push:
     branches: [main]
 
 jobs:
-  build:
-    name: Build Backend .jar
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -20,64 +19,17 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      - name: Build .jar
+      - name: Build Project with Maven
         run: mvn clean package -DskipTests
 
-      - name: Archive JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: spring-boot-jar
-          path: target/*.jar
-
-  dockerize:
-    name: Build & Push Docker Image
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Download .jar
-        uses: actions/download-artifact@v4
-        with:
-          name: spring-boot-jar
-          path: target
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        run: |
-          docker build -t ghcr.io/${{ github.repository }}:latest .
-          docker push ghcr.io/${{ github.repository }}:latest
-
-  deploy:
-    name: Deploy to Ubuntu Server via SSH
-    needs: dockerize
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Install SSH
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openssh-client
-
-      - name: Setup SSH Key
+      - name: Copy SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
+      - name: Deploy to Server
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd /home/hasan/app/algorithmen
