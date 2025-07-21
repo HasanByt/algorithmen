@@ -1,12 +1,94 @@
-# React + Vite
+# MagicSort Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Dies ist das **React-Frontend** für das Projekt [MagicSort](https://github.com/HasanByt/magicsort), das eine visuelle und interaktive Darstellung von Sortieralgorithmen ermöglicht. Es kommuniziert über eine REST-Schnittstelle mit dem Spring Boot Backend.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Auswahl verschiedener Sortieralgorithmen (z. B. Bubble Sort, Merge Sort, Quick Sort etc.)
+- Eingabe von Zahlen zur Sortierung
+- Visualisierung der Sortierabläufe (optional animiert)
+- Anzeige von:
+  - Sortierdauer (ms)
+  - Anzahl der Vergleiche
+  - Sortierte Liste
+- Moderne UI mit [Material UI (MUI)](https://mui.com/)
+- Deployment-ready für [Netlify](https://www.netlify.com/)
 
-## Expanding the ESLint configuration
+## 🚀 Installation & Start
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🔧 Voraussetzungen
+
+- Node.js (empfohlen: v18+)
+- Paketmanager wie `npm` oder `yarn`
+
+### 🛠️ Projekt installieren
+
+```bash
+git clone https://github.com/DEIN-USERNAME/frontend.git
+cd frontend
+npm install
+npm install @mui/material @emotion/react @emotion/styled
+```
+
+### ▶️ Projekt starten
+
+```bash
+npm run dev
+```
+
+Die App läuft dann unter [http://localhost:5173](http://localhost:5173)
+
+## 🔗 Backend-Anbindung
+
+Die App erwartet ein laufendes Spring Boot Backend unter einer URL wie:
+
+```text
+http://localhost:8080
+```
+
+Du kannst dies in der `.env` Datei konfigurieren:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+> Hinweis: In der Produktionsumgebung sollte diese URL in Netlify korrekt gesetzt werden.
+
+## 🧪 Tests
+
+Aktuell keine automatisierten Tests vorhanden – geplant für spätere Releases.
+
+## 📁 Projektstruktur
+
+```text
+```bash
+src/
+├── App.jsx          # Hauptkomponente mit Routing & Logik
+├── index.js         # Einstiegspunkt der React-App
+├── index.css        # Zentrales Styling
+
+public/
+├── gifs/            # Visualisierungen der Sortieralgorithmen
+├── index.html       # HTML-Template
+```
+
+## 🌐 Deployment
+
+### 📦 Netlify
+
+Für ein einfaches Deployment kannst du dieses Projekt direkt mit [Netlify](https://www.netlify.com/) verbinden.
+
+Build-Einstellungen:
+
+```text
+Build Command: npm run build
+Publish Directory: dist
+Environment Variables:
+  VITE_API_BASE_URL=https://DEINE-BACKEND-URL
+```
+
+## 📄 Lizenz
+
+Dieses Projekt steht unter der MIT-Lizenz. Siehe LICENSE.
+
+> Entwickelt mit ❤️ von Hasan Bytyqi – für das Schulprojekt im Modul M324.
