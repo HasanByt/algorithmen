@@ -1,15 +1,12 @@
 # Build Stage
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-ARG GITHUB_TOKEN
-ENV GITHUB_TOKEN=${GITHUB_TOKEN}
-
 WORKDIR /app
+
+# 👉 settings.xml für private GitHub-Pakete einfügen
+COPY .maven/settings.xml /root/.m2/settings.xml
+
 COPY . .
-
-# Optional: settings.xml einfügen, falls nötig (für GitHub Package Registry)
-# COPY .maven/settings.xml /root/.m2/settings.xml
-
 RUN mvn clean package -DskipTests
 
 # Runtime Stage
