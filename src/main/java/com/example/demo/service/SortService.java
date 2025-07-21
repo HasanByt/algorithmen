@@ -17,6 +17,9 @@ public class SortService {
         SortAlgorithm algorithm = SortAlgorithm.fromDbName(algorithmName);
         ISort sorter = SortFactory.getSorter(algorithm);
 
+        // ✅ Debug-Ausgabe: Welche Klasse wurde wirklich geladen?
+        System.out.println("Genutzter Sorter: " + sorter.getClass().getName());
+
         // Neuer Rückgabewert: SortResult
         SortResult resultData = sorter.sort(numbers);
 
