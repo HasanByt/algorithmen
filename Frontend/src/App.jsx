@@ -15,7 +15,7 @@ import logo from '/algooo.png';
 const backendUrl =
   window.location.hostname === 'localhost'
     ? 'http://localhost:8080'
-    : 'https://raise-operational-will-gentle.trycloudflare.com';
+    : 'https://eliminate-maker-civilization-lives.trycloudflare.com';
 
 
 const App = () => {
@@ -145,7 +145,7 @@ const App = () => {
           <Box sx={{ mt: 3 }}>
             <TextField
               fullWidth
-              label="Zahlen eingeben (z. B. 5, 3, 9)"
+              label="Zahlen eingeben (z. B. 5, 3, 9)"
               value={inputNumbers}
               onChange={(e) => setInputNumbers(e.target.value)}
             />

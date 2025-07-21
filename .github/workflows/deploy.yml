@@ -19,21 +19,22 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
-      - name: Build Project with Maven
-        run: mvn clean package -DskipTests
+      - name: Build Docker Image
+        run: docker build -t algorithmen-app .
 
-      - name: Copy SSH key
+      - name: Copy SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to Server
+      - name: Deploy to Ubuntu Server
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd /home/hasan/app/algorithmen
-            git pull
-            docker compose pull
+            git pull origin main
+            docker compose down
+            docker compose build
             docker compose up -d
           EOF
