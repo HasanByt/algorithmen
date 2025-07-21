@@ -4,9 +4,8 @@ services:
   mysql:
     image: mysql:8
     container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: faWaHSUMTwvPwpxQCjemCvJVaymiBzEO
-      MYSQL_DATABASE: algooo
+    env_file:
+      - .env
     ports:
       - "3307:3306"
     volumes:
@@ -15,17 +14,18 @@ services:
       test: ["CMD-SHELL", "exit 0"]
 
   springboot:
-    build: .
+    build:
+      context: .
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
     container_name: springboot
     ports:
       - "8080:8080"
     depends_on:
       mysql:
         condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/algooo
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: faWaHSUMTwvPwpxQCjemCvJVaymiBzEO
+    env_file:
+      - .env
     restart: on-failure
 
 volumes:
